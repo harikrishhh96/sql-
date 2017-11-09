@@ -1,0 +1,133 @@
+CREATE TABLE product (
+    product int PRIMARY KEY,
+    pName varchar(25),
+    price int(25),
+    unit int(25)
+); 
+
+CREATE TABLE customer(
+    cID int PRIMARY KEY,
+    Name varchar(25),
+    City varchar(25)
+);
+
+CREATE TABLE sales(
+    tID int(25),
+    cID int(25),
+    pID int(25),
+     
+amount int(25),
+    CONSTRAINT cID FOREIGN KEY (cID)
+    REFERENCES customer(cID),
+    
+  CONSTRAINT pID FOREIGN KEY (pID)
+    REFERENCES product(pID)
+);
+
+
+insert into product values(1,'iPhone',100000,1);
+
+insert into product values(2,'Samsung',80000,1);
+
+insert into product values(3,'Blackberry',90000,1);
+
+insert into product values(4,'Moto',10000,1);
+
+insert into product values(5,'LG',60000,1);
+
+insert into product values(6,'Nokia',3000,1);
+
+select * from product;
+
+1|iPhone|100000|1
+2|Samsung|80000|1
+3|Blackberry|90000|1
+4|Moto|10000|1
+5|LG|60000|1
+6|Nokia|3000|1
+
+insert into customer values(100,'Naren','Chennai');
+insert into customer values(101,'Sanjay','Coimbatore');
+
+insert into customer values(102,'Magesh','Erode');
+
+insert into customer values(103,'Santhosh','Thirunelveli');
+
+insert into customer values(104,'Nikhil','Pune');
+
+insert into customer values(105,'Rahul','Bangalore');
+
+
+select * from customer;
+
+
+100|Naren|Chennai
+101|Sanjay|Coimbatore
+102|Magesh|Erode
+103|Santhosh|Thirunelveli
+104|Nikhil|Pune
+105|Rahul|Bangalore
+
+
+insert into sales values(1001, 100, 1, 70000);
+insert into sales values(1001, 100, 2, 80000);
+insert into sales values(1002, 101, 2, 80000);
+insert into sales values(1002, 101, 3, 90000);
+insert into sales values(1003, 102, 3, 90000);
+insert into sales values(1004, 103, 3, 90000);
+insert into sales values(1004, 103, 4, 10000);
+insert into sales values(1004, 103, 4, 10000);
+insert into sales values(1004, 103, 4, 10000);
+insert into sales values(1005, 104, 4, 10000);
+insert into sales values(1005, 104, 5, 60000);
+insert into sales values(1005, 104, 5, 60000);
+insert into sales values(1006, 105, 6, 3000);
+insert into sales values(1006, 105, 6, 3000);
+insert into sales values(1006, 105, 6, 3000);
+insert into sales values(1006, 105, 6, 3000);
+insert into sales values(1006, 105, 6, 3000);
+
+select * from sales;
+
+1001|100|1|70000
+1001|100|2|80000
+1002|101|2|80000
+1002|101|3|90000
+1003|102|3|90000
+1004|103|3|90000
+1004|103|4|10000
+1004|103|4|10000
+1004|103|4|10000
+1005|104|4|10000
+1005|104|5|60000
+1005|104|5|60000
+1006|105|6|3000
+1006|105|6|3000
+1006|105|6|3000
+1006|105|6|3000
+1006|105|6|3000
+
+1. Which product is highly sold?
+select product,pName 
+from product 
+where 
+product IN 
+(select pid from sales group by pid
+ order by count(pid) desc
+);
+
+
+2. How many no. of times each product is sold?
+select pid, count(distinct(tid)) as 'Num_trans'
+from sales
+ group by pid 
+order by Num_trans desc;
+
+3. Which phone brand has highest individual transactions?
+select top(1) pname,pid, sum(amount) from product p  inner join sales s on p.product=s.pid group by p.product order by sum(amount) desc;
+
+4. Which branch has sold more products?
+select max(total), cid, city from (select c.city, sum(amount) as total, s.cid  from sales s join customer c on s.cid=c.cid group by cid)as t3;
+ 
+5. Return the Customer details whose has done transactions more than 80000?
+select cid,tid,sum(amount) from sales group by tid,cid having sum(amount)>80000;
